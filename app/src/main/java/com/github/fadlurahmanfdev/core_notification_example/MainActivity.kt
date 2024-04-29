@@ -6,8 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.github.fadlurahmanfdev.core_notification.data.repositories.NotificationRepository
-import com.github.fadlurahmanfdev.core_notification.data.repositories.NotificationRepositoryImpl
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.repositories.NotificationRepositoryImpl
 import com.github.fadlurahmanfdev.core_notification_example.usecase.ExampleNotificationUseCaseImpl
 import com.github.fadlurahmanfdev.core_notification_example.adapter.ListExampleAdapter
 import com.github.fadlurahmanfdev.core_notification_example.model.FeatureModel

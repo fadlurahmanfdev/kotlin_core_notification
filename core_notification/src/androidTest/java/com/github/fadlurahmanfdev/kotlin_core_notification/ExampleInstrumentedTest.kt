@@ -1,4 +1,4 @@
-package com.github.fadlurahmanfdev.core_notification
+package com.github.fadlurahmanfdev.kotlin_core_notification
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.github.fadlurahmanfdev.core_notification"
+    namespace = "com.github.fadlurahmanfdev.kotlin_core_notification"
     compileSdk = 34
 
     defaultConfig {
@@ -57,7 +57,7 @@ publishing {
     publications {
         register<MavenPublication>("release"){
             groupId = "com.github.fadlurahmanfdev"
-            artifactId = "core_notification"
+            artifactId = "kotlin_core_notification"
             version = "0.0.2"
 
             afterEvaluate {

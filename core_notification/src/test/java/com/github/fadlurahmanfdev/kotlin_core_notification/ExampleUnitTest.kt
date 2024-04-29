@@ -1,4 +1,4 @@
-package com.github.fadlurahmanfdev.core_notification
+package com.github.fadlurahmanfdev.kotlin_core_notification
 
 import org.junit.Test
 

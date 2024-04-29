@@ -1,12 +1,12 @@
-package com.github.fadlurahmanfdev.core_notification.data.repositories
+package com.github.fadlurahmanfdev.kotlin_core_notification.data.repositories
 
 import android.app.PendingIntent
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.annotation.DrawableRes
-import com.github.fadlurahmanfdev.core_notification.data.dto.model.ItemGroupedNotificationModel
-import com.github.fadlurahmanfdev.core_notification.data.dto.model.ItemMessagingNotificationModel
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemGroupedNotificationModel
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemMessagingNotificationModel
 
 interface NotificationRepository {
     /**

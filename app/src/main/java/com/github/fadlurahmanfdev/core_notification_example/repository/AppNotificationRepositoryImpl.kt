@@ -5,9 +5,9 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.util.Log
 import androidx.annotation.DrawableRes
-import com.github.fadlurahmanfdev.core_notification.data.dto.model.ItemMessagingNotificationModel
-import com.github.fadlurahmanfdev.core_notification.data.repositories.NotificationRepository
-import com.github.fadlurahmanfdev.core_notification.data.repositories.NotificationRepositoryImpl
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemMessagingNotificationModel
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.repositories.NotificationRepository
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.repositories.NotificationRepositoryImpl
 import com.github.fadlurahmanfdev.core_notification_example.R
 
 class AppNotificationRepositoryImpl (

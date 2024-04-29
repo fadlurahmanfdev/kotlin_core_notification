@@ -1,4 +1,4 @@
-package com.github.fadlurahmanfdev.core_notification.data.dto.model
+package com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model
 
 data class ItemMessagingNotificationModel(
     val message: String,

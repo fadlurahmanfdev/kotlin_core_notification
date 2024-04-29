@@ -1,4 +1,4 @@
-package com.github.fadlurahmanfdev.core_notification.others
+package com.github.fadlurahmanfdev.kotlin_core_notification.others
 
 import android.app.NotificationManager
 import android.content.Context

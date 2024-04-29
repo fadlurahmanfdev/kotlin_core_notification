@@ -1,4 +1,4 @@
-package com.github.fadlurahmanfdev.core_notification.data.repositories
+package com.github.fadlurahmanfdev.kotlin_core_notification.data.repositories
 
 import android.Manifest
 import android.app.Notification
@@ -22,9 +22,9 @@ import androidx.core.graphics.drawable.IconCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.github.fadlurahmanfdev.core_notification.data.dto.model.ItemGroupedNotificationModel
-import com.github.fadlurahmanfdev.core_notification.data.dto.model.ItemMessagingNotificationModel
-import com.github.fadlurahmanfdev.core_notification.others.BaseNotificationService
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemGroupedNotificationModel
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemMessagingNotificationModel
+import com.github.fadlurahmanfdev.kotlin_core_notification.others.BaseNotificationService
 
 class NotificationRepositoryImpl : BaseNotificationService(),
     NotificationRepository {
