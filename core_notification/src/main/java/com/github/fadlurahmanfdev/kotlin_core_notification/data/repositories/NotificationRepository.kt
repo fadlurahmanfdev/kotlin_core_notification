@@ -19,6 +19,8 @@ interface NotificationRepository {
         onCompleteCheckPermission: (isGranted: Boolean) -> Unit
     )
 
+    fun isNotificationPermissionGranted(context: Context): Boolean
+
     fun isNotificationChannelExist(context: Context, channelId: String): Boolean
 
     fun createNotificationChannel(

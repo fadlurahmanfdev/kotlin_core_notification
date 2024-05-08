@@ -56,6 +56,24 @@ class NotificationRepositoryImpl : BaseNotificationService(),
         }
     }
 
+    override fun isNotificationPermissionGranted(context: Context): Boolean {
+        return when {
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> {
+                val isNotificationEnabled =
+                    NotificationManagerCompat.from(context).areNotificationsEnabled()
+                isNotificationEnabled
+            }
+
+            else -> {
+                val status = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission_group.NOTIFICATIONS
+                )
+                status == PackageManager.PERMISSION_GRANTED
+            }
+        }
+    }
+
     override fun isNotificationChannelExist(context: Context, channelId: String): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val allChannels = getNotificationManager(context).notificationChannels
