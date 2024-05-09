@@ -1,16 +1,24 @@
 package com.github.fadlurahmanfdev.core_notification_example.repository
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.media.RingtoneManager
 import android.net.Uri
 import android.util.Log
 import androidx.annotation.DrawableRes
-import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemMessagingNotificationModel
+import androidx.core.app.NotificationCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import com.github.fadlurahmanfdev.core_notification_example.R
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemConversationNotificationModel
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemInboxNotificationModel
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemPerson
 import com.github.fadlurahmanfdev.kotlin_core_notification.data.repositories.NotificationRepository
 import com.github.fadlurahmanfdev.kotlin_core_notification.data.repositories.NotificationRepositoryImpl
-import com.github.fadlurahmanfdev.core_notification_example.R
 
-class AppNotificationRepositoryImpl (
+class AppNotificationRepositoryImpl(
     private val notificationRepository: NotificationRepository,
 ) : AppNotificationRepository {
     companion object {
@@ -20,14 +28,18 @@ class AppNotificationRepositoryImpl (
         const val GENERAL_CHANNEL_NAME = NotificationRepositoryImpl.GENERAL_CHANNEL_NAME
         const val GENERAL_CHANNEL_DESCRIPTION =
             NotificationRepositoryImpl.GENERAL_CHANNEL_DESCRIPTION
-        const val MESSAGING_CHANNEL_ID = "MESSAGING"
-        const val MESSAGING_CHANNEL_NAME = "Percakapan"
-        const val MESSAGING_CHANNEL_DESCRIPTION =
+        const val CONVERSATION_CHANNEL_ID = "CONVERSATION"
+        const val CONVERSATION_CHANNEL_NAME = "Percakapan"
+        const val CONVERSATION_CHANNEL_DESCRIPTION =
             "Notifikasi Percakapan"
         const val VOIP_CHANNEL_ID = "VOIP"
         const val VOIP_CHANNEL_NAME = "Panggilan"
         const val VOIP_CHANNEL_DESCRIPTION =
             "Notifikasi Panggilan"
+        const val CUSTOM_CHANNEL_ID = "CUSTOM"
+        const val CUSTOM_CHANNEL_NAME = "Custom"
+        const val CUSTOM_CHANNEL_DESCRIPTION =
+            "Notifikasi Custom"
     }
 
     private fun createGeneralChannel(context: Context) {
@@ -41,14 +53,14 @@ class AppNotificationRepositoryImpl (
         )
     }
 
-    private fun createMessagingChannel(context: Context) {
+    private fun createConversationChannel(context: Context) {
         val sound =
             Uri.parse("android.resource://" + context.packageName + "/" + R.raw.messaging_notification_sound)
         notificationRepository.createNotificationChannel(
             context,
-            channelId = MESSAGING_CHANNEL_ID,
-            channelName = MESSAGING_CHANNEL_NAME,
-            channelDescription = MESSAGING_CHANNEL_DESCRIPTION,
+            channelId = CONVERSATION_CHANNEL_ID,
+            channelName = CONVERSATION_CHANNEL_NAME,
+            channelDescription = CONVERSATION_CHANNEL_DESCRIPTION,
             sound = sound,
         )
     }
@@ -64,6 +76,17 @@ class AppNotificationRepositoryImpl (
         )
     }
 
+    private fun createCustomChannel(context: Context) {
+        val sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        notificationRepository.createNotificationChannel(
+            context,
+            channelId = CUSTOM_CHANNEL_ID,
+            channelName = CUSTOM_CHANNEL_NAME,
+            channelDescription = CUSTOM_CHANNEL_DESCRIPTION,
+            sound = sound,
+        )
+    }
+
     override fun askPermission(
         context: Context,
         onCompleteCheckPermission: (isGranted: Boolean) -> Unit
@@ -75,7 +98,7 @@ class AppNotificationRepositoryImpl (
         askPermission(context, onCompleteCheckPermission = { isGranted ->
             if (isGranted) {
                 createGeneralChannel(context)
-                notificationRepository.showGeneralNotification(
+                notificationRepository.showBasicNotification(
                     context,
                     id = id,
                     title = title,
@@ -93,42 +116,129 @@ class AppNotificationRepositoryImpl (
         })
     }
 
-    override fun showMessagingNotification(context: Context, id: Int) {
+    override fun showImageNotification(
+        context: Context,
+        id: Int,
+        title: String,
+        message: String,
+        imageUrl: String,
+    ) {
         askPermission(context, onCompleteCheckPermission = { isGranted ->
             if (isGranted) {
-                createMessagingChannel(context)
-                val messages = listOf(
-                    ItemMessagingNotificationModel(
-                        message = "MESSAGE FROM PERSON 1",
-                        messageFrom = "PERSON 1",
-                        personImageFromNetwork = "https://raw.githubusercontent.com/TutorialsBuzz/cdn/main/android.jpg",
-                        timestamp = System.currentTimeMillis(),
-                    ),
-                    ItemMessagingNotificationModel(
-                        message = "MESSAGE FROM PERSON 2",
-                        messageFrom = "PERSON 2",
-                        personImageFromNetwork = "https://picsum.photos/400",
-                        timestamp = System.currentTimeMillis()
-                    ),
-                    ItemMessagingNotificationModel(
-                        message = "MESSAGE FROM PERSON 3",
-                        messageFrom = "PERSON 3",
-                        personImageFromNetwork = "https://raw.githubusercontent.com/TutorialsBuzz/cdn/main/android.jpg",
-                        timestamp = System.currentTimeMillis(),
-                    ),
-                )
-                notificationRepository.showMessagingNotification(
+                createGeneralChannel(context)
+                notificationRepository.showBasicImageNotification(
                     context,
                     id = id,
-                    channelId = MESSAGING_CHANNEL_ID,
-                    groupKey = "${context.packageName}.MESSAGING",
-                    items = messages,
+                    title = title,
+                    message = message,
                     smallIcon = BANK_MAS_LOGO_ICON,
+                    imageUrl = imageUrl,
+                    pendingIntent = null,
                 )
             } else {
                 Log.d(
                     AppNotificationRepositoryImpl::class.java.simpleName,
-                    "unable to showMessagingNotification cause permission is not granted"
+                    "unable to showImageNotification cause permission is not granted"
+                )
+            }
+        })
+    }
+
+    override fun showCustomImageNotification(
+        context: Context,
+        id: Int,
+        title: String,
+        message: String,
+        imageUrl: String
+    ) {
+        askPermission(context, onCompleteCheckPermission = { isGranted ->
+            if (isGranted) {
+                createCustomChannel(context)
+                val notificationBuilder = NotificationCompat.Builder(context, CUSTOM_CHANNEL_ID)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setAutoCancel(true)
+                    .setSmallIcon(BANK_MAS_LOGO_ICON)
+                Glide.with(context)
+                    .asBitmap()
+                    .load(imageUrl)
+                    .into(object : CustomTarget<Bitmap>() {
+                        override fun onResourceReady(
+                            resource: Bitmap,
+                            transition: Transition<in Bitmap>?
+                        ) {
+                            val bitmap: Bitmap? = null
+                            notificationBuilder.setLargeIcon(resource)
+                            notificationBuilder.setStyle(
+                                NotificationCompat.BigPictureStyle().bigPicture(resource)
+                                    .bigLargeIcon(bitmap)
+                            )
+                            notificationRepository.showCustomNotification(
+                                context,
+                                id = id,
+                                notificationBuilder = notificationBuilder
+                            )
+                        }
+
+                        override fun onLoadCleared(placeholder: Drawable?) {}
+
+                        override fun onLoadFailed(errorDrawable: Drawable?) {
+                            super.onLoadFailed(errorDrawable)
+                            notificationRepository.showCustomNotification(
+                                context,
+                                id = id,
+                                notificationBuilder = notificationBuilder
+                            )
+                        }
+
+                    })
+            } else {
+                Log.d(
+                    AppNotificationRepositoryImpl::class.java.simpleName,
+                    "unable to showCustomImageNotification cause permission is not granted"
+                )
+            }
+        })
+    }
+
+    override fun showInboxesNotification(
+        context: Context,
+        id: Int,
+        title: String,
+        message: String,
+        inboxesItem: List<ItemInboxNotificationModel>
+    ) {
+        notificationRepository.showBasicInboxNotification(
+            context,
+            id = id,
+            title = title,
+            text = message,
+            smallIcon = BANK_MAS_LOGO_ICON,
+            inboxes = inboxesItem
+        )
+    }
+
+    override fun showConversationNotification(
+        context: Context,
+        id: Int,
+        conversationTitle: String,
+        from: ItemPerson,
+        conversations: List<ItemConversationNotificationModel>
+    ) {
+        askPermission(context, onCompleteCheckPermission = { isGranted ->
+            if (isGranted) {
+                createConversationChannel(context)
+                notificationRepository.showBasicConversationNotification(
+                    context,
+                    id = id,
+                    smallIcon = BANK_MAS_LOGO_ICON,
+                    conversationTitle = conversationTitle,
+                    conversationFrom = from,
+                    conversations = conversations
+                )
+            } else {
+                Log.d(
+                    AppNotificationRepositoryImpl::class.java.simpleName,
+                    "unable to showConversationNotification cause permission is not granted"
                 )
             }
         })

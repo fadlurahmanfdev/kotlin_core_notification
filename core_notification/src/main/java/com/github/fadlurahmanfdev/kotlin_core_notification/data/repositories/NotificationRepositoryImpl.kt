@@ -22,8 +22,10 @@ import androidx.core.graphics.drawable.IconCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemConversationNotificationModel
 import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemGroupedNotificationModel
-import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemMessagingNotificationModel
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemInboxNotificationModel
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemPerson
 import com.github.fadlurahmanfdev.kotlin_core_notification.others.BaseNotificationService
 
 class NotificationRepositoryImpl : BaseNotificationService(),
@@ -119,7 +121,7 @@ class NotificationRepositoryImpl : BaseNotificationService(),
         }
     }
 
-    override fun showGeneralNotification(
+    override fun showBasicNotification(
         context: Context,
         id: Int,
         title: String,
@@ -150,13 +152,14 @@ class NotificationRepositoryImpl : BaseNotificationService(),
         getNotificationManager(context).notify(id, notification.build())
     }
 
-    override fun showGeneralImageNotification(
+    override fun showBasicImageNotification(
         context: Context,
         id: Int,
         title: String,
         message: String,
         imageUrl: String,
         @DrawableRes smallIcon: Int,
+        pendingIntent: PendingIntent?,
     ) {
         val sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         createNotificationChannel(
@@ -166,10 +169,15 @@ class NotificationRepositoryImpl : BaseNotificationService(),
             GENERAL_CHANNEL_DESCRIPTION,
             sound,
         )
-        val notification = notificationBuilder(context, GENERAL_CHANNEL_ID, smallIcon).apply {
-            setContentTitle(title)
-            setContentText(message)
-        }
+        val notificationBuilder =
+            notificationBuilder(context, GENERAL_CHANNEL_ID, smallIcon).apply {
+                setContentTitle(title)
+                setContentText(message)
+
+                if (pendingIntent != null) {
+                    setContentIntent(pendingIntent)
+                }
+            }
         Glide.with(context)
             .asBitmap()
             .load(imageUrl)
@@ -178,10 +186,14 @@ class NotificationRepositoryImpl : BaseNotificationService(),
                     resource: Bitmap,
                     transition: Transition<in Bitmap>?
                 ) {
-                    notification.setLargeIcon(resource)
-                    notification.setStyle(NotificationCompat.BigPictureStyle().bigPicture(resource))
+                    val bitmap: Bitmap? = null
+                    notificationBuilder.setLargeIcon(resource)
+                    notificationBuilder.setStyle(
+                        NotificationCompat.BigPictureStyle().bigPicture(resource)
+                            .bigLargeIcon(bitmap)
+                    )
                     getNotificationManager(context)
-                        .notify(id, notification.build())
+                        .notify(id, notificationBuilder.build())
                 }
 
                 override fun onLoadCleared(placeholder: Drawable?) {}
@@ -190,40 +202,190 @@ class NotificationRepositoryImpl : BaseNotificationService(),
                     super.onLoadFailed(errorDrawable)
                     Log.e(NotificationRepositoryImpl::class.java.simpleName, "failed onLoadFailed")
                     getNotificationManager(context)
-                        .notify(id, notification.build())
+                        .notify(id, notificationBuilder.build())
                 }
 
             })
     }
 
-    override fun showCustomNotification(
+    override fun showBasicInboxNotification(
+        context: Context,
+        id: Int,
+        title: String,
+        text: String,
+        @DrawableRes smallIcon: Int,
+        inboxes: List<ItemInboxNotificationModel>
+    ) {
+        val sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        createNotificationChannel(
+            context,
+            GENERAL_CHANNEL_ID,
+            GENERAL_CHANNEL_NAME,
+            GENERAL_CHANNEL_DESCRIPTION,
+            sound,
+        )
+        showCustomInboxNotification(
+            context,
+            id = id,
+            channelId = GENERAL_CHANNEL_ID,
+            title = title,
+            text = text,
+            smallIcon = smallIcon,
+            inboxes = inboxes
+        )
+    }
+
+    override fun showCustomInboxNotification(
         context: Context,
         id: Int,
         channelId: String,
         title: String,
-        message: String,
+        text: String,
         @DrawableRes smallIcon: Int,
-        groupKey: String?,
-        pendingIntent: PendingIntent?,
+        inboxes: List<ItemInboxNotificationModel>
     ) {
-        val notification =
+        val inboxStyle = NotificationCompat.InboxStyle()
+        repeat(inboxes.size) { index ->
+            inboxStyle.addLine(inboxes[index].line)
+        }
+        val notificationBuilder =
             notificationBuilder(context, channelId, smallIcon).apply {
                 setContentTitle(title)
-                setContentText(message)
-                if (pendingIntent != null) {
-                    setContentIntent(pendingIntent)
-                }
-                if (groupKey != null) {
-                    setGroup(groupKey)
-                }
+                setContentText(text)
+                setStyle(inboxStyle)
             }
-        getNotificationManager(context).notify(id, notification.build())
+        getNotificationManager(context).notify(id, notificationBuilder.build())
     }
 
-    override fun cancelNotification(context: Context, id: Int) {
-        getNotificationManager(context).cancel(id)
+    private fun getPersonMessagingStyle(
+        context: Context,
+        item: ItemPerson,
+        onComplete: (String, Person.Builder) -> Unit
+    ) {
+        val personBuilder = Person.Builder().setName(item.name)
+        if (item.image != null) {
+            Glide.with(context)
+                .asBitmap()
+                .load(item.image)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
+                        personBuilder.setIcon(IconCompat.createWithBitmap(resource))
+                        onComplete(item.id, personBuilder)
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {}
+
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        super.onLoadFailed(errorDrawable)
+                        onComplete(item.id, personBuilder)
+                    }
+
+                })
+        } else {
+            onComplete(item.id, personBuilder)
+        }
     }
 
+    override fun showBasicConversationNotification(
+        context: Context,
+        id: Int,
+        @DrawableRes smallIcon: Int,
+        conversationTitle: String,
+        conversationFrom: ItemPerson,
+        conversations: List<ItemConversationNotificationModel>,
+    ) {
+        val sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        createNotificationChannel(
+            context,
+            channelId = GENERAL_CHANNEL_ID,
+            channelName = GENERAL_CHANNEL_NAME,
+            channelDescription = GENERAL_CHANNEL_DESCRIPTION,
+            sound = sound
+        )
+        showCustomConversationNotification(
+            context,
+            id = id,
+            channelId = GENERAL_CHANNEL_ID,
+            smallIcon = smallIcon,
+            conversationTitle = conversationTitle,
+            conversationFrom = conversationFrom,
+            conversations = conversations,
+        )
+    }
+
+    override fun showCustomConversationNotification(
+        context: Context,
+        id: Int,
+        channelId: String,
+        @DrawableRes smallIcon: Int,
+        conversationTitle: String,
+        conversationFrom: ItemPerson,
+        conversations: List<ItemConversationNotificationModel>
+    ) {
+        val notificationBuilder = notificationBuilder(
+            context,
+            channelId = channelId,
+            smallIcon = smallIcon
+        )
+        val mapPerson = hashMapOf<String, Person.Builder>()
+        var counter = 0
+        getPersonMessagingStyle(
+            context,
+            item = conversationFrom,
+            onComplete = { personId, personBuilder ->
+                mapPerson[personId] = personBuilder
+                val messagingStyle = NotificationCompat.MessagingStyle(personBuilder.build())
+                    .setConversationTitle(conversationTitle)
+                repeat(conversations.size) { index ->
+                    val conversation = conversations[index]
+                    if (mapPerson.containsKey(conversation.person.id)) {
+                        val person = mapPerson[conversation.person.id]!!
+                        messagingStyle.addMessage(
+                            NotificationCompat.MessagingStyle.Message(
+                                conversation.message,
+                                conversation.timestamp,
+                                person.build(),
+                            )
+                        )
+                        counter++
+                        if (counter >= conversations.size) {
+                            notificationBuilder.setStyle(messagingStyle)
+                            getNotificationManager(context).notify(
+                                id,
+                                notificationBuilder.build()
+                            )
+                        }
+                    } else {
+                        getPersonMessagingStyle(
+                            context,
+                            item = conversation.person,
+                            onComplete = { personIdElement, personBuilderElement ->
+                                messagingStyle.addMessage(
+                                    NotificationCompat.MessagingStyle.Message(
+                                        conversation.message,
+                                        conversation.timestamp,
+                                        personBuilderElement.build(),
+                                    )
+                                )
+                                mapPerson[personIdElement] = personBuilderElement
+                                counter++
+                                if (counter >= conversations.size) {
+                                    notificationBuilder.setStyle(messagingStyle)
+                                    getNotificationManager(context).notify(
+                                        id,
+                                        notificationBuilder.build()
+                                    )
+                                }
+                            })
+                    }
+                }
+            })
+    }
+
+    @Deprecated("not ready yet")
     override fun showGroupedNotification(
         context: Context,
         id: Int,
@@ -266,88 +428,15 @@ class NotificationRepositoryImpl : BaseNotificationService(),
         }
     }
 
-    private fun getPersonFromItemMessaging(
-        context: Context,
-        item: ItemMessagingNotificationModel,
-        onComplete: (Person.Builder) -> Unit
-    ) {
-        val personBuilder = Person.Builder().setName(item.messageFrom)
-        if (item.personImageFromNetwork != null) {
-            Glide.with(context)
-                .asBitmap()
-                .load(item.personImageFromNetwork)
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap>?
-                    ) {
-                        personBuilder.setIcon(IconCompat.createWithBitmap(resource))
-                        onComplete(personBuilder)
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {}
-
-                    override fun onLoadFailed(errorDrawable: Drawable?) {
-                        super.onLoadFailed(errorDrawable)
-                        onComplete(personBuilder)
-                    }
-
-                })
-        }
-    }
-
-    override fun showMessagingNotification(
+    override fun showCustomNotification(
         context: Context,
         id: Int,
-        channelId: String,
-        groupKey: String,
-        items: List<ItemMessagingNotificationModel>,
-        smallIcon: Int,
+        notificationBuilder: NotificationCompat.Builder,
     ) {
-        val builder = notificationBuilder(
-            context,
-            channelId = channelId,
-            smallIcon = smallIcon,
-        )
+        getNotificationManager(context).notify(id, notificationBuilder.build())
+    }
 
-        var person1Builder: Person.Builder
-        val totalMessages = items.size
-
-        getPersonFromItemMessaging(
-            context, item = items.first(),
-            onComplete = { personBuilder ->
-                person1Builder = personBuilder
-
-                val messagingStyle = NotificationCompat.MessagingStyle(
-                    person1Builder.build()
-                )
-
-                var counter = 0
-                for (element in items) {
-                    getPersonFromItemMessaging(
-                        context, item = element,
-                        onComplete = { personBuilderStep2 ->
-                            counter++
-                            messagingStyle.addMessage(
-                                element.message,
-                                element.timestamp,
-                                personBuilderStep2.build()
-                            )
-
-                            if (counter >= totalMessages) {
-                                messagingStyle.setGroupConversation(true)
-
-                                builder.setStyle(messagingStyle)
-                                    .setGroup(groupKey)
-                                    .setGroupSummary(true)
-
-                                getNotificationManager(context).notify(id, builder.build())
-                            }
-                        },
-                    )
-                }
-
-            },
-        )
+    override fun cancelNotification(context: Context, id: Int) {
+        getNotificationManager(context).cancel(id)
     }
 }

@@ -22,9 +22,15 @@ class ExampleNotificationViewModel(
     }
 
     fun showNotification(context: Context) =
-        exampleNotificationUseCase.showSimpleNotification(context)
+        exampleNotificationUseCase.showBasicNotification(context)
 
-    fun showMessagingNotification(context: Context) {
-        exampleNotificationUseCase.showMessagingNotification(context)
+    fun showImageNotification(context: Context) =
+        exampleNotificationUseCase.showImageNotification(context)
+
+    fun showInboxNotification(context: Context) =
+        exampleNotificationUseCase.showInboxNotification(context)
+
+    fun showConversationNotification(context: Context) {
+        exampleNotificationUseCase.showConversationNotification(context)
     }
 }

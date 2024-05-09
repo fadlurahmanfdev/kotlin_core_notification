@@ -46,6 +46,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-//    implementation(project(":core_notification"))
-    implementation("com.github.fadlurahmanfdev:kotlin_core_notification:v0.0.4")
+    implementation(libs.glide)
+
+    implementation(project(":core_notification"))
+//    implementation("com.github.fadlurahmanfdev:kotlin_core_notification:v0.0.4")
 }

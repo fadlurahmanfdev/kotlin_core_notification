@@ -5,8 +5,11 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.annotation.DrawableRes
+import androidx.core.app.NotificationCompat
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemConversationNotificationModel
 import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemGroupedNotificationModel
-import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemMessagingNotificationModel
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemInboxNotificationModel
+import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemPerson
 
 interface NotificationRepository {
     /**
@@ -36,7 +39,7 @@ interface NotificationRepository {
         channelId: String,
     )
 
-    fun showGeneralNotification(
+    fun showBasicNotification(
         context: Context,
         id: Int,
         title: String,
@@ -46,28 +49,61 @@ interface NotificationRepository {
         pendingIntent: PendingIntent?,
     )
 
-    fun showGeneralImageNotification(
+    fun showBasicImageNotification(
         context: Context,
         id: Int,
         title: String,
         message: String,
         imageUrl: String,
         @DrawableRes smallIcon: Int,
+        pendingIntent: PendingIntent?,
     )
 
-    fun showCustomNotification(
+    fun showBasicInboxNotification(
+        context: Context,
+        id: Int,
+        title: String,
+        text: String,
+        @DrawableRes smallIcon: Int,
+        inboxes: List<ItemInboxNotificationModel>
+    )
+
+    /**
+     * don't forget to create channel with same channelId before using [NotificationRepository.createNotificationChannel]
+     * */
+    fun showCustomInboxNotification(
         context: Context,
         id: Int,
         channelId: String,
         title: String,
-        message: String,
+        text: String,
         @DrawableRes smallIcon: Int,
-        groupKey: String? = null,
-        pendingIntent: PendingIntent? = null,
+        inboxes: List<ItemInboxNotificationModel>
     )
 
-    fun cancelNotification(context: Context, id: Int)
+    fun showBasicConversationNotification(
+        context: Context,
+        id: Int,
+        @DrawableRes smallIcon: Int,
+        conversationTitle: String,
+        conversationFrom: ItemPerson,
+        conversations: List<ItemConversationNotificationModel>,
+    )
 
+    /**
+     * don't forget to create channel with same channelId before using [NotificationRepository.createNotificationChannel]
+     * */
+    fun showCustomConversationNotification(
+        context: Context,
+        id: Int,
+        channelId: String,
+        @DrawableRes smallIcon: Int,
+        conversationTitle: String,
+        conversationFrom: ItemPerson,
+        conversations: List<ItemConversationNotificationModel>,
+    )
+
+    @Deprecated("not ready yet")
     fun showGroupedNotification(
         context: Context,
         id: Int,
@@ -80,12 +116,11 @@ interface NotificationRepository {
         itemNotifications: List<ItemGroupedNotificationModel>,
     )
 
-    fun showMessagingNotification(
+    fun showCustomNotification(
         context: Context,
         id: Int,
-        channelId: String,
-        groupKey: String,
-        items: List<ItemMessagingNotificationModel>,
-        smallIcon: Int,
+        notificationBuilder: NotificationCompat.Builder,
     )
+
+    fun cancelNotification(context: Context, id: Int)
 }

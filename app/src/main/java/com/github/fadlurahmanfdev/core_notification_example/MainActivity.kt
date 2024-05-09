@@ -1,7 +1,10 @@
 package com.github.fadlurahmanfdev.core_notification_example
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -27,14 +30,26 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
             title = "Show Notification",
-            desc = "Show Notification",
+            desc = "Show notification",
             enum = "SHOW_NOTIFICATION"
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Show Messaging Notification",
-            desc = "Show Notification With Messaging Style",
-            enum = "SHOW_MESSAGING_NOTIFICATION"
+            title = "Show Image Notification",
+            desc = "Show notification with image",
+            enum = "SHOW_IMAGE_NOTIFICATION"
+        ),
+        FeatureModel(
+            featureIcon = R.drawable.baseline_developer_mode_24,
+            title = "Show Inbox Notification",
+            desc = "Show notification with list of inbox",
+            enum = "SHOW_INBOX_NOTIFICATION"
+        ),
+        FeatureModel(
+            featureIcon = R.drawable.baseline_developer_mode_24,
+            title = "Show Conversation Notification",
+            desc = "Show notification with conversation style",
+            enum = "SHOW_CONVERSATION_NOTIFICATION"
         ),
     )
 
@@ -68,6 +83,11 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         rv.adapter = adapter
     }
 
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            Log.d(MainActivity::class.java.simpleName, "IS GRANTED -> $isGranted")
+        }
+
     override fun onClicked(item: FeatureModel) {
         when (item.enum) {
             "ASK_PERMISSION" -> {
@@ -78,8 +98,25 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                 viewModel.showNotification(this)
             }
 
-            "SHOW_MESSAGING_NOTIFICATION" -> {
-                viewModel.showMessagingNotification(this)
+            "SHOW_IMAGE_NOTIFICATION" -> {
+                viewModel.showImageNotification(this)
+            }
+
+            "SHOW_INBOX_NOTIFICATION" -> {
+                viewModel.showInboxNotification(this)
+            }
+
+            "SHOW_CONVERSATION_NOTIFICATION" -> {
+                viewModel.showConversationNotification(this)
+            }
+
+            "" -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requestPermissionLauncher.launch(android.Manifest.permission_group.NOTIFICATIONS)
+                } else {
+
+                }
+
             }
         }
     }
