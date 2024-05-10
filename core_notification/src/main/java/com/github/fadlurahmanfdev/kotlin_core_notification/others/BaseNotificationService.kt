@@ -1,12 +1,16 @@
 package com.github.fadlurahmanfdev.kotlin_core_notification.others
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 
 abstract class BaseNotificationService {
     private lateinit var notificationManager: NotificationManager
@@ -17,6 +21,45 @@ abstract class BaseNotificationService {
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         }
         return notificationManager
+    }
+
+    fun baseAskNotificationPermission(
+        context: Context,
+        onCompleteCheckPermission: (isGranted: Boolean) -> Unit
+    ) {
+        when {
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> {
+                val isNotificationEnabled =
+                    NotificationManagerCompat.from(context).areNotificationsEnabled()
+                onCompleteCheckPermission(isNotificationEnabled)
+            }
+
+            else -> {
+                val status = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission_group.NOTIFICATIONS
+                )
+                onCompleteCheckPermission(status == PackageManager.PERMISSION_GRANTED)
+            }
+        }
+    }
+
+    fun baseIsNotificationPermissionGranted(context: Context): Boolean {
+        return when {
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> {
+                val isNotificationEnabled =
+                    NotificationManagerCompat.from(context).areNotificationsEnabled()
+                isNotificationEnabled
+            }
+
+            else -> {
+                val status = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission_group.NOTIFICATIONS
+                )
+                status == PackageManager.PERMISSION_GRANTED
+            }
+        }
     }
 
     fun baseCreateNotificationChannel(
@@ -54,6 +97,14 @@ abstract class BaseNotificationService {
             return knownChannel != null
         }
         return false
+    }
+
+    fun baseDeleteNotificationChannel(context: Context, channelId: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (baseIsNotificationChannelExist(context, channelId)) {
+                getNotificationManager(context).deleteNotificationChannel(channelId)
+            }
+        }
     }
 
     fun notificationBuilder(

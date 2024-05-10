@@ -58,7 +58,7 @@ publishing {
         register<MavenPublication>("release"){
             groupId = "com.github.fadlurahmanfdev"
             artifactId = "kotlin_core_notification"
-            version = "0.0.10"
+            version = "0.0.11"
 
             afterEvaluate {
                 from(components["release"])

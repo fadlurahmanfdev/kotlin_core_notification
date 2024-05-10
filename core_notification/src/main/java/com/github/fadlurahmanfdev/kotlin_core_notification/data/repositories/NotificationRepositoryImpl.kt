@@ -41,39 +41,14 @@ class NotificationRepositoryImpl : BaseNotificationService(),
         context: Context,
         onCompleteCheckPermission: (isGranted: Boolean) -> Unit
     ) {
-        when {
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> {
-                val isNotificationEnabled =
-                    NotificationManagerCompat.from(context).areNotificationsEnabled()
-                onCompleteCheckPermission(isNotificationEnabled)
-            }
-
-            else -> {
-                val status = ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission_group.NOTIFICATIONS
-                )
-                onCompleteCheckPermission(status == PackageManager.PERMISSION_GRANTED)
-            }
-        }
+        return baseAskNotificationPermission(
+            context,
+            onCompleteCheckPermission = onCompleteCheckPermission
+        )
     }
 
     override fun isNotificationPermissionGranted(context: Context): Boolean {
-        return when {
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> {
-                val isNotificationEnabled =
-                    NotificationManagerCompat.from(context).areNotificationsEnabled()
-                isNotificationEnabled
-            }
-
-            else -> {
-                val status = ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission_group.NOTIFICATIONS
-                )
-                status == PackageManager.PERMISSION_GRANTED
-            }
-        }
+        return baseIsNotificationPermissionGranted(context)
     }
 
     override fun isNotificationChannelExist(context: Context, channelId: String): Boolean {
@@ -97,11 +72,7 @@ class NotificationRepositoryImpl : BaseNotificationService(),
     }
 
     override fun deleteNotificationChannel(context: Context, channelId: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (isNotificationChannelExist(context, channelId)) {
-                getNotificationManager(context).deleteNotificationChannel(channelId)
-            }
-        }
+        return baseDeleteNotificationChannel(context, channelId = channelId)
     }
 
     override fun showBasicNotification(

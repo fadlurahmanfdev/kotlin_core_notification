@@ -22,6 +22,11 @@ interface NotificationRepository {
         onCompleteCheckPermission: (isGranted: Boolean) -> Unit
     )
 
+    /**
+     * Determine whether you have been granted a notification permission.
+     * @return return true if permission is [PackageManager.PERMISSION_GRANTED] and return false if
+     * permission is [PackageManager.PERMISSION_DENIED].
+     */
     fun isNotificationPermissionGranted(context: Context): Boolean
 
     fun isNotificationChannelExist(context: Context, channelId: String): Boolean
