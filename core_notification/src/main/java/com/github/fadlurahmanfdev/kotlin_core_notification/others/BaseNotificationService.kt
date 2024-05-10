@@ -1,7 +1,9 @@
 package com.github.fadlurahmanfdev.kotlin_core_notification.others
 
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 
@@ -14,6 +16,42 @@ abstract class BaseNotificationService {
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         }
         return notificationManager
+    }
+
+     fun baseCreateNotificationChannel(
+        context: Context,
+        channelId: String,
+        channelName: String,
+        channelDescription: String,
+    ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (!baseIsNotificationChannelExist(context, channelId = channelId)) {
+                val channel = NotificationChannel(
+                    channelId,
+                    channelName,
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = channelDescription
+                    setSound(sound, null)
+                }
+                getNotificationManager(context).createNotificationChannel(channel)
+            }
+        }
+    }
+
+     fun baseIsNotificationChannelExist(context: Context, channelId: String): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val allChannels = getNotificationManager(context).notificationChannels
+            var knownChannel: NotificationChannel? = null
+            for (element in allChannels) {
+                if (element.id == channelId) {
+                    knownChannel = element
+                    break
+                }
+            }
+            return knownChannel != null
+        }
+        return false
     }
 
     fun notificationBuilder(

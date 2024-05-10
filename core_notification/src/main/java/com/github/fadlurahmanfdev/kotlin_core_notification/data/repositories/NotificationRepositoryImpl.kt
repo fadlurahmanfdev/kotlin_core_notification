@@ -77,18 +77,7 @@ class NotificationRepositoryImpl : BaseNotificationService(),
     }
 
     override fun isNotificationChannelExist(context: Context, channelId: String): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val allChannels = getNotificationManager(context).notificationChannels
-            var knownChannel: NotificationChannel? = null
-            for (element in allChannels) {
-                if (element.id == channelId) {
-                    knownChannel = element
-                    break
-                }
-            }
-            return knownChannel != null
-        }
-        return false
+        return baseIsNotificationChannelExist(context, channelId = channelId)
     }
 
     override fun createNotificationChannel(
@@ -98,19 +87,12 @@ class NotificationRepositoryImpl : BaseNotificationService(),
         channelDescription: String,
         sound: Uri,
     ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (!isNotificationChannelExist(context, channelId)) {
-                val channel = NotificationChannel(
-                    channelId,
-                    channelName,
-                    NotificationManager.IMPORTANCE_HIGH
-                ).apply {
-                    description = channelDescription
-                    setSound(sound, null)
-                }
-                getNotificationManager(context).createNotificationChannel(channel)
-            }
-        }
+        return baseCreateNotificationChannel(
+            context,
+            channelId = channelId,
+            channelName = channelName,
+            channelDescription = channelDescription
+        )
     }
 
     override fun deleteNotificationChannel(context: Context, channelId: String) {
