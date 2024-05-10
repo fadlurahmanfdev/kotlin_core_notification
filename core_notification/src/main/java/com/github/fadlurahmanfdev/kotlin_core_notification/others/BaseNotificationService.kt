@@ -19,12 +19,12 @@ abstract class BaseNotificationService {
         return notificationManager
     }
 
-     fun baseCreateNotificationChannel(
+    fun baseCreateNotificationChannel(
         context: Context,
         channelId: String,
         channelName: String,
         channelDescription: String,
-        sound:Uri
+        sound: Uri? = null,
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (!baseIsNotificationChannelExist(context, channelId = channelId)) {
@@ -41,7 +41,7 @@ abstract class BaseNotificationService {
         }
     }
 
-     fun baseIsNotificationChannelExist(context: Context, channelId: String): Boolean {
+    fun baseIsNotificationChannelExist(context: Context, channelId: String): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val allChannels = getNotificationManager(context).notificationChannels
             var knownChannel: NotificationChannel? = null
