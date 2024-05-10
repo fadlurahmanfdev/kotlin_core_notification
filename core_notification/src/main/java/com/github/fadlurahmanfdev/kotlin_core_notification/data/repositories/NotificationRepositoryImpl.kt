@@ -91,7 +91,8 @@ class NotificationRepositoryImpl : BaseNotificationService(),
             context,
             channelId = channelId,
             channelName = channelName,
-            channelDescription = channelDescription
+            channelDescription = channelDescription,
+            sound = sound
         )
     }
 

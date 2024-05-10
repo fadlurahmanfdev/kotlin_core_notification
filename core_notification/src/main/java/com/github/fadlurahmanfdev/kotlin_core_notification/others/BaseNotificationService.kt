@@ -3,6 +3,7 @@ package com.github.fadlurahmanfdev.kotlin_core_notification.others
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
@@ -23,6 +24,7 @@ abstract class BaseNotificationService {
         channelId: String,
         channelName: String,
         channelDescription: String,
+        sound:Uri
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (!baseIsNotificationChannelExist(context, channelId = channelId)) {
