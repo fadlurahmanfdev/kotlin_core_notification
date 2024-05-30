@@ -71,7 +71,9 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         viewModel = ExampleNotificationViewModel(
             exampleNotificationUseCase = ExampleNotificationUseCaseImpl(
                 appNotificationRepository = AppNotificationRepositoryImpl(
-                    notificationRepository = NotificationRepositoryImpl(),
+                    notificationRepository = NotificationRepositoryImpl(
+                        context = this
+                    ),
                 ),
             ),
         )

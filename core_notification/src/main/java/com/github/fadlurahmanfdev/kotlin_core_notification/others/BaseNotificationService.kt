@@ -7,44 +7,21 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 
-abstract class BaseNotificationService {
-    private lateinit var notificationManager: NotificationManager
+abstract class BaseNotificationService(val context: Context) {
+    var notificationManager: NotificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    fun getNotificationManager(context: Context): NotificationManager {
-        if (!this::notificationManager.isInitialized) {
-            notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        }
-        return notificationManager
-    }
-
-    fun baseAskNotificationPermission(
-        context: Context,
-        onCompleteCheckPermission: (isGranted: Boolean) -> Unit
-    ) {
-        when {
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> {
-                val isNotificationEnabled =
-                    NotificationManagerCompat.from(context).areNotificationsEnabled()
-                onCompleteCheckPermission(isNotificationEnabled)
-            }
-
-            else -> {
-                val status = ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission_group.NOTIFICATIONS
-                )
-                onCompleteCheckPermission(status == PackageManager.PERMISSION_GRANTED)
-            }
-        }
-    }
-
-    fun baseIsNotificationPermissionGranted(context: Context): Boolean {
+    /**
+     * check whether notification permission is granted & enabled
+     * return true if notification permission is granted, otherwise it will return false
+     * */
+    open fun isNotificationPermissionEnabledAndGranted(): Boolean {
         return when {
             Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> {
                 val isNotificationEnabled =
@@ -62,15 +39,24 @@ abstract class BaseNotificationService {
         }
     }
 
-    fun baseCreateNotificationChannel(
-        context: Context,
+    fun isSupportedNotificationChannel(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+    }
+
+    /**
+     * create notification channel
+     * if notification channel is successfully created, it will return true, otherwise it will return false
+     * */
+    open fun createNotificationChannel(
         channelId: String,
         channelName: String,
         channelDescription: String,
-        sound: Uri? = null,
-    ) {
+        sound: Uri,
+    ): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (!baseIsNotificationChannelExist(context, channelId = channelId)) {
+            if (isNotificationChannelExist(channelId)) {
+                return true
+            } else {
                 val channel = NotificationChannel(
                     channelId,
                     channelName,
@@ -79,14 +65,25 @@ abstract class BaseNotificationService {
                     description = channelDescription
                     setSound(sound, null)
                 }
-                getNotificationManager(context).createNotificationChannel(channel)
+                notificationManager.createNotificationChannel(channel)
+                return isNotificationChannelExist(channelId)
             }
+        } else {
+            Log.i(
+                BaseNotificationService::class.java.simpleName,
+                "${Build.VERSION.SDK_INT} is not supported to create notification channel"
+            )
+            return true
         }
     }
 
-    fun baseIsNotificationChannelExist(context: Context, channelId: String): Boolean {
+    /**
+     * check whether is notification channel is exist
+     * return true if notification channel is exist
+     * */
+    open fun isNotificationChannelExist(channelId: String): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val allChannels = getNotificationManager(context).notificationChannels
+            val allChannels = notificationManager.notificationChannels
             var knownChannel: NotificationChannel? = null
             for (element in allChannels) {
                 if (element.id == channelId) {
@@ -95,20 +92,37 @@ abstract class BaseNotificationService {
                 }
             }
             return knownChannel != null
+        } else {
+            Log.i(
+                BaseNotificationService::class.java.simpleName,
+                "${Build.VERSION.SDK_INT} is not supported to get notification channel"
+            )
+            return true
         }
-        return false
     }
 
-    fun baseDeleteNotificationChannel(context: Context, channelId: String) {
+
+    /**
+     * delete notification channel
+     * return true if notification channel is successfully deleted
+     * */
+    open fun deleteNotificationChannel(channelId: String): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (baseIsNotificationChannelExist(context, channelId)) {
-                getNotificationManager(context).deleteNotificationChannel(channelId)
+            if (isNotificationChannelExist(channelId)) {
+                notificationManager.deleteNotificationChannel(channelId)
+                return !isNotificationChannelExist(channelId)
             }
+            return true
+        } else {
+            Log.i(
+                BaseNotificationService::class.java.simpleName,
+                "${Build.VERSION.SDK_INT} is not supported to delete notification channel"
+            )
+            return true
         }
     }
 
     fun notificationBuilder(
-        context: Context,
         channelId: String,
         @DrawableRes smallIcon: Int,
     ): NotificationCompat.Builder {

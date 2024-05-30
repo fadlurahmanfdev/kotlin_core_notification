@@ -3,6 +3,7 @@ package com.github.fadlurahmanfdev.kotlin_core_notification.data.repositories
 import android.app.PendingIntent
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
@@ -12,40 +13,35 @@ import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemIn
 import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemPerson
 
 interface NotificationRepository {
-    /**
-     * Determine whether you have been granted a particular permission.
-     * @return isGranted: return true if permission is [PackageManager.PERMISSION_GRANTED] and return false if
-     * permission is [PackageManager.PERMISSION_DENIED].
-     */
-    fun askNotificationPermission(
-        context: Context,
-        onCompleteCheckPermission: (isGranted: Boolean) -> Unit
-    )
+//    /**
+//     * Determine whether you have been granted a particular permission.
+//     * @return isGranted: return true if permission is [PackageManager.PERMISSION_GRANTED] and return false if
+//     * permission is [PackageManager.PERMISSION_DENIED].
+//     */
+//    fun askNotificationPermission(
+//        context: Context,
+//        onCompleteCheckPermission: (isGranted: Boolean) -> Unit
+//    )
 
     /**
      * Determine whether you have been granted a notification permission.
      * @return return true if permission is [PackageManager.PERMISSION_GRANTED] and return false if
      * permission is [PackageManager.PERMISSION_DENIED].
      */
-    fun isNotificationPermissionGranted(context: Context): Boolean
+    fun isNotificationPermissionEnabledAndGranted(): Boolean
 
-    fun isNotificationChannelExist(context: Context, channelId: String): Boolean
+    fun isNotificationChannelExist(channelId: String): Boolean
 
     fun createNotificationChannel(
-        context: Context,
         channelId: String,
         channelName: String,
         channelDescription: String,
         sound: Uri,
-    )
+    ): Boolean
 
-    fun deleteNotificationChannel(
-        context: Context,
-        channelId: String,
-    )
+    fun deleteNotificationChannel(channelId: String):Boolean
 
-    fun showBasicNotification(
-        context: Context,
+    fun showNotification(
         id: Int,
         title: String,
         message: String,
@@ -54,8 +50,22 @@ interface NotificationRepository {
         pendingIntent: PendingIntent?,
     )
 
-    fun showBasicImageNotification(
-        context: Context,
+    fun showCustomNotification(
+        channelId: String,
+        id: Int,
+        title: String,
+        message: String,
+        @DrawableRes smallIcon: Int,
+        groupKey: String?,
+        pendingIntent: PendingIntent?,
+    )
+
+    fun showCustomNotification(
+        id: Int,
+        notificationBuilder: NotificationCompat.Builder,
+    )
+
+    fun showImageNotification(
         id: Int,
         title: String,
         message: String,
@@ -64,8 +74,36 @@ interface NotificationRepository {
         pendingIntent: PendingIntent?,
     )
 
-    fun showBasicInboxNotification(
-        context: Context,
+    fun showImageNotification(
+        id: Int,
+        title: String,
+        message: String,
+        image: Bitmap,
+        @DrawableRes smallIcon: Int,
+        pendingIntent: PendingIntent?,
+    )
+
+    fun showImageNotification(
+        channelId: String,
+        id: Int,
+        title: String,
+        message: String,
+        imageUrl: String,
+        @DrawableRes smallIcon: Int,
+        pendingIntent: PendingIntent?,
+    )
+
+    fun showImageNotification(
+        channelId: String,
+        id: Int,
+        title: String,
+        message: String,
+        image: Bitmap,
+        @DrawableRes smallIcon: Int,
+        pendingIntent: PendingIntent?,
+    )
+
+    fun showInboxNotification(
         id: Int,
         title: String,
         text: String,
@@ -77,7 +115,6 @@ interface NotificationRepository {
      * don't forget to create channel with same channelId before using [NotificationRepository.createNotificationChannel]
      * */
     fun showCustomInboxNotification(
-        context: Context,
         id: Int,
         channelId: String,
         title: String,
@@ -86,8 +123,7 @@ interface NotificationRepository {
         inboxes: List<ItemInboxNotificationModel>
     )
 
-    fun showBasicConversationNotification(
-        context: Context,
+    fun showConversationNotification(
         id: Int,
         @DrawableRes smallIcon: Int,
         conversationTitle: String,
@@ -99,7 +135,6 @@ interface NotificationRepository {
      * don't forget to create channel with same channelId before using [NotificationRepository.createNotificationChannel]
      * */
     fun showCustomConversationNotification(
-        context: Context,
         id: Int,
         channelId: String,
         @DrawableRes smallIcon: Int,
@@ -110,7 +145,6 @@ interface NotificationRepository {
 
     @Deprecated("not ready yet")
     fun showGroupedNotification(
-        context: Context,
         id: Int,
         channelId: String,
         groupKey: String,
@@ -119,12 +153,6 @@ interface NotificationRepository {
         @DrawableRes smallIcon: Int,
         itemLine: List<String>,
         itemNotifications: List<ItemGroupedNotificationModel>,
-    )
-
-    fun showCustomNotification(
-        context: Context,
-        id: Int,
-        notificationBuilder: NotificationCompat.Builder,
     )
 
     fun cancelNotification(context: Context, id: Int)

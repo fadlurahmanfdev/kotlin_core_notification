@@ -14,10 +14,7 @@ class ExampleNotificationUseCaseImpl(
         context: Context,
         onCompleteCheckPermission: (Boolean) -> Unit
     ) {
-        appNotificationRepository.askPermission(
-            context,
-            onCompleteCheckPermission = onCompleteCheckPermission
-        )
+        appNotificationRepository.isPermissionEnabledAndGranted()
     }
 
     override fun showBasicNotification(context: Context) =
@@ -30,7 +27,6 @@ class ExampleNotificationUseCaseImpl(
 
     override fun showImageNotification(context: Context) =
         appNotificationRepository.showImageNotification(
-            context,
             id = 1,
             title = "Image Notificaction",
             message = "This is example of image notification",

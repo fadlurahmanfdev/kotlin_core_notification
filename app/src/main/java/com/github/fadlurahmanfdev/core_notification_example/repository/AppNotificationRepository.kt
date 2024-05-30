@@ -6,11 +6,10 @@ import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemIn
 import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemPerson
 
 interface AppNotificationRepository {
-    fun askPermission(context: Context, onCompleteCheckPermission: (isGranted: Boolean) -> Unit)
+    fun isPermissionEnabledAndGranted(): Boolean
     fun createVOIPChannel(context: Context)
     fun showNotification(context: Context, id: Int, title: String, message: String)
     fun showImageNotification(
-        context: Context,
         id: Int,
         title: String,
         message: String,
