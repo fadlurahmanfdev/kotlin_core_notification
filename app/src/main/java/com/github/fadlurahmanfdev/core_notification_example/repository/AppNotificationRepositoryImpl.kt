@@ -92,7 +92,7 @@ class AppNotificationRepositoryImpl(
         imageUrl: String,
     ) {
         notificationRepository.showImageNotification(
-            id = id,
+            notificationId = id,
             title = title,
             message = message,
             smallIcon = BANK_MAS_LOGO_ICON,
@@ -109,7 +109,7 @@ class AppNotificationRepositoryImpl(
     ) {
         return notificationRepository.showCustomImageNotification(
             channelId = CUSTOM_CHANNEL_ID,
-            id = id,
+            notificationId = id,
             title = title,
             message = message,
             imageUrl = imageUrl,
@@ -125,7 +125,7 @@ class AppNotificationRepositoryImpl(
         inboxesItem: List<ItemInboxNotificationModel>
     ) {
         notificationRepository.showInboxNotification(
-            id = id,
+            notificationId = id,
             title = title,
             text = message,
             smallIcon = BANK_MAS_LOGO_ICON,

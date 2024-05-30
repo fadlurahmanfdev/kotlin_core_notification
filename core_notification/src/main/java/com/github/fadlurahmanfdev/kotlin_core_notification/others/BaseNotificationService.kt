@@ -1,6 +1,7 @@
 package com.github.fadlurahmanfdev.kotlin_core_notification.others
 
 import android.Manifest
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -14,17 +15,17 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 
 abstract class BaseNotificationService(val context: Context) {
-    lateinit var notificationManager: NotificationManager
-
-
-    init {
-     notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    }
+    var notificationManager: NotificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     /**
-     * check whether notification permission is granted & enabled
-     * return true if notification permission is granted, otherwise it will return false
-     * */
+     * Determine whether you have been granted a notification permission.
+     * @author fadlurahmanfdev
+     * @return return true if permission is [PackageManager.PERMISSION_GRANTED] and return false if
+     * permission is [PackageManager.PERMISSION_DENIED].
+     * @see BaseNotificationService.createNotificationChannel
+     * @see BaseNotificationService.isSupportedNotificationChannel
+     */
     open fun isNotificationPermissionEnabledAndGranted(): Boolean {
         return when {
             Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> {
@@ -50,6 +51,11 @@ abstract class BaseNotificationService(val context: Context) {
     /**
      * create notification channel
      * if notification channel is successfully created, it will return true, otherwise it will return false
+     * @author fadlurahmanfdev
+     * @return true if notification channel is created or device didn't support notification channel, and return false if notification channel is not successfully created
+     * @param channelId unique identifier for different channelId created for the apps
+     * @param channelName channel name will be shown to user in notification
+     * @param channelDescription channel description will be shown to user in notification
      * */
     open fun createNotificationChannel(
         channelId: String,
@@ -161,5 +167,13 @@ abstract class BaseNotificationService(val context: Context) {
         return builder.setStyle(inboxStyle)
             .setGroup(groupKey)
             .setGroupSummary(true)
+    }
+
+    open fun showNotification(notificationId: Int, notification: Notification) {
+        notificationManager.notify(notificationId, notification)
+    }
+
+    open fun cancelNotification(notificationId: Int) {
+        notificationManager.cancel(notificationId)
     }
 }

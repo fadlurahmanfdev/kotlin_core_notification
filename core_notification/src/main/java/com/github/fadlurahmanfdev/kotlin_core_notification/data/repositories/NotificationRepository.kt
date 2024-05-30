@@ -1,8 +1,7 @@
 package com.github.fadlurahmanfdev.kotlin_core_notification.data.repositories
 
+import android.app.Notification
 import android.app.PendingIntent
-import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.annotation.DrawableRes
@@ -15,11 +14,6 @@ import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemPe
 interface NotificationRepository {
     fun isSupportedNotificationChannel(): Boolean
 
-    /**
-     * Determine whether you have been granted a notification permission.
-     * @return return true if permission is [PackageManager.PERMISSION_GRANTED] and return false if
-     * permission is [PackageManager.PERMISSION_DENIED].
-     */
     fun isNotificationPermissionEnabledAndGranted(): Boolean
 
     fun isNotificationChannelExist(channelId: String): Boolean
@@ -34,7 +28,7 @@ interface NotificationRepository {
     fun deleteNotificationChannel(channelId: String):Boolean
 
     fun showNotification(
-        id: Int,
+        notificationId: Int,
         title: String,
         message: String,
         @DrawableRes smallIcon: Int,
@@ -44,7 +38,7 @@ interface NotificationRepository {
 
     fun showCustomNotification(
         channelId: String,
-        id: Int,
+        notificationId: Int,
         title: String,
         message: String,
         @DrawableRes smallIcon: Int,
@@ -53,12 +47,12 @@ interface NotificationRepository {
     )
 
     fun showCustomNotification(
-        id: Int,
+        notificationId: Int,
         notificationBuilder: NotificationCompat.Builder,
     )
 
     fun showImageNotification(
-        id: Int,
+        notificationId: Int,
         title: String,
         message: String,
         imageUrl: String,
@@ -67,7 +61,7 @@ interface NotificationRepository {
     )
 
     fun showImageNotification(
-        id: Int,
+        notificationId: Int,
         title: String,
         message: String,
         image: Bitmap,
@@ -77,7 +71,7 @@ interface NotificationRepository {
 
     fun showCustomImageNotification(
         channelId: String,
-        id: Int,
+        notificationId: Int,
         title: String,
         message: String,
         imageUrl: String,
@@ -87,7 +81,7 @@ interface NotificationRepository {
 
     fun showCustomImageNotification(
         channelId: String,
-        id: Int,
+        notificationId: Int,
         title: String,
         message: String,
         image: Bitmap,
@@ -96,7 +90,7 @@ interface NotificationRepository {
     )
 
     fun showInboxNotification(
-        id: Int,
+        notificationId: Int,
         title: String,
         text: String,
         @DrawableRes smallIcon: Int,
@@ -107,7 +101,7 @@ interface NotificationRepository {
      * don't forget to create channel with same channelId before using [NotificationRepository.createNotificationChannel]
      * */
     fun showCustomInboxNotification(
-        id: Int,
+        notificationId: Int,
         channelId: String,
         title: String,
         text: String,
@@ -116,7 +110,7 @@ interface NotificationRepository {
     )
 
     fun showConversationNotification(
-        id: Int,
+        notificationId: Int,
         @DrawableRes smallIcon: Int,
         conversationTitle: String,
         conversationFrom: ItemPerson,
@@ -127,7 +121,7 @@ interface NotificationRepository {
      * don't forget to create channel with same channelId before using [NotificationRepository.createNotificationChannel]
      * */
     fun showCustomConversationNotification(
-        id: Int,
+        notificationId: Int,
         channelId: String,
         @DrawableRes smallIcon: Int,
         conversationTitle: String,
@@ -137,7 +131,7 @@ interface NotificationRepository {
 
     @Deprecated("not ready yet")
     fun showGroupedNotification(
-        id: Int,
+        notificationId: Int,
         channelId: String,
         groupKey: String,
         bigContentTitle: String,
@@ -147,5 +141,6 @@ interface NotificationRepository {
         itemNotifications: List<ItemGroupedNotificationModel>,
     )
 
-    fun cancelNotification(context: Context, id: Int)
+    fun showNotification(notificationId: Int, notification: Notification)
+    fun cancelNotification(notificationId: Int)
 }

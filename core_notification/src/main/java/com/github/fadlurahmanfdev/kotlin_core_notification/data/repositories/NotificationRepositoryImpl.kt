@@ -80,7 +80,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
     }
 
     override fun showNotification(
-        id: Int,
+        notificationId: Int,
         title: String,
         message: String,
         @DrawableRes smallIcon: Int,
@@ -99,13 +99,13 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
                         setContentIntent(pendingIntent)
                     }
                 }
-            notificationManager.notify(id, notification.build())
+            super.showNotification(notificationId, notification.build())
         }
     }
 
     override fun showCustomNotification(
         channelId: String,
-        id: Int,
+        notificationId: Int,
         title: String,
         message: String,
         @DrawableRes smallIcon: Int,
@@ -123,18 +123,18 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
                     setContentIntent(pendingIntent)
                 }
             }
-        notificationManager.notify(id, notification.build())
+        notificationManager.notify(notificationId, notification.build())
     }
 
     override fun showCustomNotification(
-        id: Int,
+        notificationId: Int,
         notificationBuilder: NotificationCompat.Builder,
     ) {
-        notificationManager.notify(id, notificationBuilder.build())
+        notificationManager.notify(notificationId, notificationBuilder.build())
     }
 
     override fun showImageNotification(
-        id: Int,
+        notificationId: Int,
         title: String,
         message: String,
         imageUrl: String,
@@ -164,7 +164,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
                             NotificationCompat.BigPictureStyle().bigPicture(resource)
                                 .bigLargeIcon(resource)
                         )
-                        notificationManager.notify(id, notificationBuilder.build())
+                        notificationManager.notify(notificationId, notificationBuilder.build())
                     }
 
                     override fun onLoadCleared(placeholder: Drawable?) {}
@@ -175,7 +175,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
                             NotificationRepositoryImpl::class.java.simpleName,
                             "failed onLoadFailed"
                         )
-                        notificationManager.notify(id, notificationBuilder.build())
+                        notificationManager.notify(notificationId, notificationBuilder.build())
                     }
 
                 })
@@ -183,7 +183,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
     }
 
     override fun showImageNotification(
-        id: Int,
+        notificationId: Int,
         title: String,
         message: String,
         image: Bitmap,
@@ -205,13 +205,13 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
                 NotificationCompat.BigPictureStyle().bigPicture(image)
                     .bigLargeIcon(image)
             )
-            notificationManager.notify(id, notificationBuilder.build())
+            notificationManager.notify(notificationId, notificationBuilder.build())
         }
     }
 
     override fun showCustomImageNotification(
         channelId: String,
-        id: Int,
+        notificationId: Int,
         title: String,
         message: String,
         imageUrl: String,
@@ -241,7 +241,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
                             NotificationCompat.BigPictureStyle().bigPicture(resource)
                                 .bigLargeIcon(resource)
                         )
-                        notificationManager.notify(id, notificationBuilder.build())
+                        notificationManager.notify(notificationId, notificationBuilder.build())
                     }
 
                     override fun onLoadCleared(placeholder: Drawable?) {}
@@ -252,7 +252,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
                             NotificationRepositoryImpl::class.java.simpleName,
                             "failed onLoadFailed"
                         )
-                        notificationManager.notify(id, notificationBuilder.build())
+                        notificationManager.notify(notificationId, notificationBuilder.build())
                     }
 
                 })
@@ -261,7 +261,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
 
     override fun showCustomImageNotification(
         channelId: String,
-        id: Int,
+        notificationId: Int,
         title: String,
         message: String,
         image: Bitmap,
@@ -283,12 +283,12 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
                 NotificationCompat.BigPictureStyle().bigPicture(image)
                     .bigLargeIcon(image)
             )
-            notificationManager.notify(id, notificationBuilder.build())
+            notificationManager.notify(notificationId, notificationBuilder.build())
         }
     }
 
     override fun showInboxNotification(
-        id: Int,
+        notificationId: Int,
         title: String,
         text: String,
         @DrawableRes smallIcon: Int,
@@ -296,7 +296,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
     ) {
         if (isCanShowGeneralNotification()) {
             showCustomInboxNotification(
-                id = id,
+                notificationId = notificationId,
                 channelId = GENERAL_CHANNEL_ID,
                 title = title,
                 text = text,
@@ -307,7 +307,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
     }
 
     override fun showCustomInboxNotification(
-        id: Int,
+        notificationId: Int,
         channelId: String,
         title: String,
         text: String,
@@ -324,7 +324,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
                 setContentText(text)
                 setStyle(inboxStyle)
             }
-        notificationManager.notify(id, notificationBuilder.build())
+        notificationManager.notify(notificationId, notificationBuilder.build())
     }
 
     private fun getPersonMessagingStyle(
@@ -360,7 +360,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
     }
 
     override fun showConversationNotification(
-        id: Int,
+        notificationId: Int,
         @DrawableRes smallIcon: Int,
         conversationTitle: String,
         conversationFrom: ItemPerson,
@@ -374,7 +374,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
             sound = sound
         )
         showCustomConversationNotification(
-            id = id,
+            notificationId = notificationId,
             channelId = GENERAL_CHANNEL_ID,
             smallIcon = smallIcon,
             conversationTitle = conversationTitle,
@@ -384,7 +384,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
     }
 
     override fun showCustomConversationNotification(
-        id: Int,
+        notificationId: Int,
         channelId: String,
         @DrawableRes smallIcon: Int,
         conversationTitle: String,
@@ -419,7 +419,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
                         if (counter >= conversations.size) {
                             notificationBuilder.setStyle(messagingStyle)
                             notificationManager.notify(
-                                id,
+                                notificationId,
                                 notificationBuilder.build()
                             )
                         }
@@ -440,7 +440,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
                                 if (counter >= conversations.size) {
                                     notificationBuilder.setStyle(messagingStyle)
                                     notificationManager.notify(
-                                        id,
+                                        notificationId,
                                         notificationBuilder.build()
                                     )
                                 }
@@ -452,7 +452,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
 
     @Deprecated("not ready yet")
     override fun showGroupedNotification(
-        id: Int,
+        notificationId: Int,
         channelId: String,
         groupKey: String,
         bigContentTitle: String,
@@ -487,11 +487,15 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
             for (index in itemNotifications.indices) {
                 notify(itemNotifications[index].id, notifications[index])
             }
-            notify(id, builder.build())
+            notify(notificationId, builder.build())
         }
     }
 
-    override fun cancelNotification(context: Context, id: Int) {
-        notificationManager.cancel(id)
+    override fun showNotification(notificationId: Int, notification: Notification) {
+        return super.showNotification(notificationId, notification)
+    }
+
+    override fun cancelNotification(notificationId: Int) {
+        return super.cancelNotification(notificationId)
     }
 }
