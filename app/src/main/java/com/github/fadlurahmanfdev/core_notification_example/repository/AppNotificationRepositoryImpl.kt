@@ -102,17 +102,23 @@ class AppNotificationRepositoryImpl(
     }
 
     override fun showCustomImageNotification(
-        context: Context,
         id: Int,
         title: String,
         message: String,
         imageUrl: String
     ) {
-        isPermissionEnabledAndGranted()
+        return notificationRepository.showCustomImageNotification(
+            channelId = CUSTOM_CHANNEL_ID,
+            id = id,
+            title = title,
+            message = message,
+            imageUrl = imageUrl,
+            smallIcon = BANK_MAS_LOGO_ICON,
+            pendingIntent = null
+        )
     }
 
     override fun showInboxesNotification(
-        context: Context,
         id: Int,
         title: String,
         message: String,

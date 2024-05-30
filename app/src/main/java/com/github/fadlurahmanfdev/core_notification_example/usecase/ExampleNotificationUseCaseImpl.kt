@@ -35,7 +35,6 @@ class ExampleNotificationUseCaseImpl(
 
     override fun showInboxNotification(context: Context) {
         appNotificationRepository.showInboxesNotification(
-            context,
             id = 1,
             title = "5 new mails from Taufik",
             message = "Check them out",

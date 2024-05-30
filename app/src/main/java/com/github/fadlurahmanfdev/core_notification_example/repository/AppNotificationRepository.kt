@@ -17,7 +17,6 @@ interface AppNotificationRepository {
     )
 
     fun showCustomImageNotification(
-        context: Context,
         id: Int,
         title: String,
         message: String,
@@ -25,7 +24,6 @@ interface AppNotificationRepository {
     )
 
     fun showInboxesNotification(
-        context: Context,
         id: Int,
         title: String,
         message: String,

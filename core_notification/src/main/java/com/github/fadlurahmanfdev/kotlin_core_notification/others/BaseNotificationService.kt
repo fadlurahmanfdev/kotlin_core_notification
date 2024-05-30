@@ -39,7 +39,7 @@ abstract class BaseNotificationService(val context: Context) {
         }
     }
 
-    fun isSupportedNotificationChannel(): Boolean {
+    open fun isSupportedNotificationChannel(): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
     }
 

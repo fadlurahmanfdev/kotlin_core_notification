@@ -13,15 +13,7 @@ import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemIn
 import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemPerson
 
 interface NotificationRepository {
-//    /**
-//     * Determine whether you have been granted a particular permission.
-//     * @return isGranted: return true if permission is [PackageManager.PERMISSION_GRANTED] and return false if
-//     * permission is [PackageManager.PERMISSION_DENIED].
-//     */
-//    fun askNotificationPermission(
-//        context: Context,
-//        onCompleteCheckPermission: (isGranted: Boolean) -> Unit
-//    )
+    fun isSupportedNotificationChannel(): Boolean
 
     /**
      * Determine whether you have been granted a notification permission.
@@ -83,7 +75,7 @@ interface NotificationRepository {
         pendingIntent: PendingIntent?,
     )
 
-    fun showImageNotification(
+    fun showCustomImageNotification(
         channelId: String,
         id: Int,
         title: String,
@@ -93,7 +85,7 @@ interface NotificationRepository {
         pendingIntent: PendingIntent?,
     )
 
-    fun showImageNotification(
+    fun showCustomImageNotification(
         channelId: String,
         id: Int,
         title: String,
