@@ -28,7 +28,7 @@ jobs:
       - name: Sleep for 30 seconds
         uses: jakejarvis/wait-action@master
         with:
-          time: '30s'
+          time: '60s'
       - name: Curl Tag Release Jitpack IO
         uses: wei/curl@master
         continue-on-error: true
