@@ -14,8 +14,12 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 
 abstract class BaseNotificationService(val context: Context) {
-    var notificationManager: NotificationManager =
-        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    lateinit var notificationManager: NotificationManager
+
+
+    init {
+     notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    }
 
     /**
      * check whether notification permission is granted & enabled
@@ -51,7 +55,7 @@ abstract class BaseNotificationService(val context: Context) {
         channelId: String,
         channelName: String,
         channelDescription: String,
-        sound: Uri,
+        sound: Uri?,
     ): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (isNotificationChannelExist(channelId)) {

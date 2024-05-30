@@ -29,9 +29,11 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
         const val GENERAL_CHANNEL_NAME = "Umum"
         const val GENERAL_CHANNEL_DESCRIPTION = "Notifikasi Umum"
     }
+
     override fun isSupportedNotificationChannel(): Boolean {
         return super.isSupportedNotificationChannel()
     }
+
     override fun isNotificationPermissionEnabledAndGranted(): Boolean {
         return super.isNotificationPermissionEnabledAndGranted()
     }
@@ -63,7 +65,7 @@ class NotificationRepositoryImpl(context: Context) : BaseNotificationService(con
         channelId: String,
         channelName: String,
         channelDescription: String,
-        sound: Uri,
+        sound: Uri?,
     ): Boolean {
         return super.createNotificationChannel(
             channelId = channelId,

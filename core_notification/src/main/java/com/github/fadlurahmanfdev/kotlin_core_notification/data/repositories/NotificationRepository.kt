@@ -28,7 +28,7 @@ interface NotificationRepository {
         channelId: String,
         channelName: String,
         channelDescription: String,
-        sound: Uri,
+        sound: Uri?,
     ): Boolean
 
     fun deleteNotificationChannel(channelId: String):Boolean
