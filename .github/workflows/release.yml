@@ -25,7 +25,7 @@ jobs:
           release_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
-      - name: Sleep for 30 seconds
+      - name: Sleep for 60 seconds
         uses: jakejarvis/wait-action@master
         with:
           time: '60s'
