@@ -1,13 +1,15 @@
 package com.github.fadlurahmanfdev.core_notification_example.usecase
 
 import android.content.Context
+import com.github.fadlurahmanfdev.core_notification_example.repository.AppMessagingNotificationRepository
 import com.github.fadlurahmanfdev.core_notification_example.repository.AppNotificationRepository
 import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemConversationNotificationModel
 import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemInboxNotificationModel
 import com.github.fadlurahmanfdev.kotlin_core_notification.data.dto.model.ItemPerson
 
 class ExampleNotificationUseCaseImpl(
-    private val appNotificationRepository: AppNotificationRepository
+    private val appNotificationRepository: AppNotificationRepository,
+    private val appMessagingNotificationRepository: AppMessagingNotificationRepository,
 ) : ExampleNotificationUseCase {
 
     override fun askPermissionNotification(
@@ -34,7 +36,7 @@ class ExampleNotificationUseCaseImpl(
         )
 
     override fun showInboxNotification(context: Context) {
-        appNotificationRepository.showInboxesNotification(
+        appMessagingNotificationRepository.showInboxesNotification(
             id = 1,
             title = "5 new mails from Taufik",
             message = "Check them out",
@@ -57,7 +59,7 @@ class ExampleNotificationUseCaseImpl(
             name = "Second Person",
             image = "https://raw.githubusercontent.com/TutorialsBuzz/cdn/main/android.jpg"
         )
-        appNotificationRepository.showConversationNotification(
+        appMessagingNotificationRepository.showConversationNotification(
             context, id = 2,
             conversationTitle = "Conversation Title",
             from = person1,

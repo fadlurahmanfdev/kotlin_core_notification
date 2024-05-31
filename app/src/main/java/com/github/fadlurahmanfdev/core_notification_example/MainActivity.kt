@@ -9,11 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.github.fadlurahmanfdev.kotlin_core_notification.data.repositories.NotificationRepositoryImpl
-import com.github.fadlurahmanfdev.core_notification_example.usecase.ExampleNotificationUseCaseImpl
 import com.github.fadlurahmanfdev.core_notification_example.adapter.ListExampleAdapter
 import com.github.fadlurahmanfdev.core_notification_example.model.FeatureModel
+import com.github.fadlurahmanfdev.core_notification_example.repository.AppMessagingNotificationRepositoryImpl
 import com.github.fadlurahmanfdev.core_notification_example.repository.AppNotificationRepositoryImpl
+import com.github.fadlurahmanfdev.core_notification_example.usecase.ExampleNotificationUseCaseImpl
 import com.github.fadlurahmanfdev.core_notification_example.view_model.ExampleNotificationViewModel
 
 class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
@@ -71,10 +71,11 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         viewModel = ExampleNotificationViewModel(
             exampleNotificationUseCase = ExampleNotificationUseCaseImpl(
                 appNotificationRepository = AppNotificationRepositoryImpl(
-                    notificationRepository = NotificationRepositoryImpl(
-                        context = this
-                    ),
+                    this
                 ),
+                appMessagingNotificationRepository = AppMessagingNotificationRepositoryImpl(
+                    this
+                )
             ),
         )
 

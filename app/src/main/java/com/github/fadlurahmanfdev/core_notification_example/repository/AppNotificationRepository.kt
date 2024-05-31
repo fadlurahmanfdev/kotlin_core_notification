@@ -23,18 +23,18 @@ interface AppNotificationRepository {
         imageUrl: String,
     )
 
-    fun showInboxesNotification(
-        id: Int,
-        title: String,
-        message: String,
-        inboxesItem: List<ItemInboxNotificationModel>
-    )
-
-    fun showConversationNotification(
-        context: Context,
-        id: Int,
-        conversationTitle: String,
-        from: ItemPerson,
-        conversations: List<ItemConversationNotificationModel>
-    )
+//    fun showInboxesNotification(
+//        id: Int,
+//        title: String,
+//        message: String,
+//        inboxesItem: List<ItemInboxNotificationModel>
+//    )
+//
+//    fun showConversationNotification(
+//        context: Context,
+//        id: Int,
+//        conversationTitle: String,
+//        from: ItemPerson,
+//        conversations: List<ItemConversationNotificationModel>
+//    )
 }
